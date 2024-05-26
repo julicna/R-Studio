@@ -1,0 +1,179 @@
+---
+title: "R-Studio: Simple Linear Regression"
+subtitle: HW3
+output: ioslides_presentation
+---
+
+<style type="text/css">
+body p, div,h3, h4, h5 {
+color: black;
+font-family: 'Karla',sans-serif;
+font-size: 18px;
+}
+slides > slide.title-slide hgroup h1 {
+font-family:'Montserrat', sans-serif;
+color: #597B8D;
+}
+
+h2 {
+font-family: 'Montserrat', sans-serif;
+color: #597B8D;
+}
+
+pre {
+  font-size: 18px; /* Adjust the font size as needed */
+}
+
+</style> 
+<!-- end of defining font in various parts of slides -->
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## What is Linear Regression?
+
+Linear Regression is a statistical technique that aims at measuring the relationship between two variables. It helps to visually see the trend and relationships via a 'line of best fit' in graphs. As well as allowing predictions of the dependent variable for any given independent variable. <br>
+The equation is derived from this formula: <br>
+$$ y = mx+b $$ <br>
+where: <br>
+$y$ = dependent variable <br>
+$x$ = independent variable <br>
+$m$ = slope <br>
+$b$ = y-intercept <br>
+
+
+## Linear Regression Equation
+
+$$ y = \beta_0 + \beta_1 \cdot x + \varepsilon $$
+where: <br>
+$y$ = dependent variable <br>
+$\beta_0$ = intercept <br>
+$\beta_1$ = slope <br>
+$x$ = independent variable <br>
+$\varepsilon$ = error term <br>
+
+## Visualizing Linear Regression in R-Studio: Data Import
+
+For this example we will be using the palmerpenguins data set. Collected by Dr.Kristen Gorman, this data set contains information for 344 penguins, across 3 different species and 3 islands in the Palmer Archipelago.
+
+```{r cars, echo = TRUE, message = FALSE, warning=FALSE}
+
+library(palmerpenguins)
+library(dplyr)
+library(ggplot2)
+library(plotly)
+data(penguins)
+
+
+```
+
+## Visualizing Linear Regression in R-Studio: Constructing Plot
+
+Code to create simple scatter plot:
+
+```{r, echo = TRUE, eval = FALSE , warning = FALSE, message = FALSE}
+ggplot(penguins, aes(x = flipper_length_mm,
+                          y = bill_length_mm,
+                          color = species))+
+  geom_point() +
+  labs(x = "Flipper Length (in mm)",
+       y = "Bill Length (in mm)",
+       color = "Species",
+       title = "Comparing Penguin Bill to Flipper Length")
+```
+
+## Visualizing Linear Regression in R-Studio: Constructing Plot Cont.
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+ggplot(penguins, aes(x = flipper_length_mm,
+                          y = bill_length_mm,
+                          color = species))+
+  geom_point() +
+  labs(x = "Flipper Length (in mm)",
+       y = "Bill Length (in mm)",
+       color = "Species",
+       title = "Comparing Penguin Bill to Flipper Length")
+```
+
+
+## Visualizing Linear Regression in R-Studio: Adding Regression Line
+`geom_smooth()` adds a 'line of best fit'. If you do not state a `method()`
+then by default it will plot a smooth curve. In order to get a line you 
+must declare `geom_smooth(method = "lm")`.
+```{r, echo = TRUE, eval = FALSE, warning = FALSE, message = FALSE}
+#---------- Constructs basic scatter plot ------------
+ggplot(penguins, aes(x = flipper_length_mm,
+                     y = bill_length_mm,
+                     color = species)) +
+  geom_point() +
+  # Adds regression line
+  geom_smooth(method = "lm",
+              se = FALSE) +
+  # Adds labels 
+  labs(x = "Flipper Length (in mm)",
+       y = "Bill Length (in mm)",
+       color = "Species",
+       title = "Comparing Penguin Bill to Flipper Length")
+```
+
+
+## Visualizing Linear Regression in R-Studio: Adding Regression Line Cont.
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+#---------- Constructs basic scatter plot ------------
+ggplot(penguins, aes(x = flipper_length_mm,
+                     y = bill_length_mm,
+                     color = species)) +
+  geom_point() +
+  # Adds regression line
+  geom_smooth(method = "lm",
+              se = FALSE) +
+  # Adds labels 
+  labs(x = "Flipper Length (in mm)",
+       y = "Bill Length (in mm)",
+       color = "Species",
+       title = "Comparing Penguin Bill to Flipper Length")
+
+```
+
+
+## Interactive  3D Scatter Plot with Plotly
+
+```{r}
+penguins_clean <- na.omit(penguins)
+
+x <- penguins_clean$flipper_length_mm
+y <- penguins_clean$bill_length_mm
+z <- penguins_clean$bill_depth_mm
+color <- penguins_clean$species
+
+xax <- list(title = "Flipper Length (in mm)",
+            titlefont = list(size = 10))
+yax <- list(title = "Bill Length ( in mm",
+            titlefont = list(size = 10))
+zax <- list(title = "Bill Depth ( in mm",
+            titlefont = list(size = 10))
+
+# Create Plotly scatter plot
+fig <- plot_ly(data = penguins_clean,
+               x = x,
+               y = y,
+               z = z,
+               type = "scatter3d",
+               mode = "markers",
+               color = ~color,
+               marker = list(size = 4)) %>%
+       layout( scene = list( 
+         xaxis = xax,
+         yaxis = yax,
+         zaxis = zax 
+         ),
+         title = "Penguin Data: 3D Scatter Plot"
+        )
+fig
+
+```
+
+
